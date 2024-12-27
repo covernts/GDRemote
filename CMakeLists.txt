@@ -22,8 +22,7 @@ add_subdirectory($ENV{GEODE_SDK} ${CMAKE_CURRENT_BINARY_DIR}/geode)
 add_compile_definitions(WIN32_LEAN_AND_MEAN=1) # THANK YOU chs000 AND GLOBED
 
 CPMAddPackage("gh:chriskohlhoff/asio#asio-1-32-0")
-set(ASIO_INCLUDE_DIR ${CMAKE_BINARY_DIR}/_deps/asio-src/asio/include)
-include_directories(${ASIO_INCLUDE_DIR})
+set(ASIO_INCLUDE_DIR ${asio_SOURCE_DIR}/asio/include)
 
 CPMAddPackage("gh:CrowCpp/Crow@1.2.0")
 target_link_libraries(${PROJECT_NAME} Crow)
