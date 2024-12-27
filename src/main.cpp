@@ -5,7 +5,20 @@
 #include <crow/mustache.h>
 
 using namespace geode::prelude;
-static bool noclip = false;
+
+struct Hack {
+    std::string name;
+    bool enabled;
+};
+
+std::vector<Hack> hacks = {
+    {"Noclip", false},
+};
+
+bool isEnabled(std::string name) {
+    for (auto hack : hacks) { if (hack.name == name) return hack.enabled; }
+    return false;
+}
 
 std::string loadTemplate(const std::string& path) {
     std::ifstream file(path);
@@ -21,22 +34,38 @@ std::string loadTemplate(const std::string& path) {
 void startWs() {
     crow::SimpleApp app;
 
-    CROW_ROUTE(app, "/noclip")
+    CROW_ROUTE(app, "/")
     ([]() {
         std::string templateContent = loadTemplate((Mod::get()->getResourcesDir() / "index.html").string());
 
-        crow::mustache::context ctx;
-        crow::mustache::template_t temp = templateContent;
+        crow::json::wvalue::list hacksList;
+        for (const auto& hack : hacks) {
+            crow::json::wvalue hackCtx;
+            hackCtx["name"] = hack.name;
+            hackCtx["enabled"] = hack.enabled;
+            hacksList.emplace_back(std::move(hackCtx));
+        }
         
+        crow::json::wvalue ctx;
         ctx["username"] = GJAccountManager::get()->m_username;
-        ctx["noclip"] = noclip;
-        return temp.render(ctx);
+        ctx["hacks"] = std::move(hacksList);
+        
+        crow::mustache::template_t tmpl = templateContent;
+        return tmpl.render(ctx);
     });
 
-    CROW_ROUTE(app, "/toggle_noclip").methods(crow::HTTPMethod::Post, crow::HTTPMethod::Get)
-    ([]() {
-        noclip = !noclip;
-        return crow::response("Noclip is now " + std::string(noclip ? "enabled" : "disabled"));
+    CROW_ROUTE(app, "/toggle_hack").methods(crow::HTTPMethod::Post)
+    ([](const crow::request& req) {
+        auto hackName = req.url_params.get("hack");
+        if (hackName) {
+            for (auto& hack : hacks) {
+                if (hack.name == hackName) {
+                    hack.enabled = !hack.enabled;
+                    return crow::response(hack.name + " is now " + (hack.enabled ? "enabled" : "disabled"));
+                }
+            }
+        }
+        return crow::response(400, "Invalid hack name");
     });
 
     geode::log::info("Mod menu running on localhost:3000");
@@ -46,7 +75,7 @@ void startWs() {
 class $modify(PlayLayer) {
     void destroyPlayer(PlayerObject* p0, GameObject* p1) {
         if (p1 == m_anticheatSpike) return PlayLayer::destroyPlayer(p0, p1);
-        if (!noclip) return PlayLayer::destroyPlayer(p0, p1);
+        if (!isEnabled("Noclip")) return PlayLayer::destroyPlayer(p0, p1);
     }
 };
 

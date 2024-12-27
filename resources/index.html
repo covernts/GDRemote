@@ -2,18 +2,21 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Noclip Toggle</title>
+    <title>Hack Panel</title>
 </head>
 <body>
-    <h1>{{username}}'s Menu</h1>
+    <h1>Hack Panel</h1>
+    <p>Welcome, {{username}}!</p>
+    {{#hacks}}
     <label>
-        <input type="checkbox" id="noclip-checkbox" onclick="toggleNoclip()" {{#noclip}}checked{{/noclip}}> Enable Noclip
-    </label>
+        <input type="checkbox" id="{{name}}-checkbox" onclick="toggleHack('{{name}}')" {{#enabled}}checked{{/enabled}}> {{name}}
+    </label><br>
+    {{/hacks}}
 
     <script>
-        function toggleNoclip() {
+        function toggleHack(hackName) {
             var xhr = new XMLHttpRequest();
-            xhr.open("POST", "/toggle_noclip", true);
+            xhr.open("POST", "/toggle_hack?hack=" + hackName, true);
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
             xhr.send();
         }
