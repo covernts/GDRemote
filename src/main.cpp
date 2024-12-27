@@ -3,6 +3,7 @@
 #include <Geode/modify/PlayLayer.hpp>
 #include <crow/app.h>
 #include <crow/mustache.h>
+#include <crow/websocket.h>
 
 using namespace geode::prelude;
 
@@ -31,8 +32,30 @@ std::string loadTemplate(const std::string& path) {
     return buffer.str();
 }
 
+std::set<crow::websocket::connection*> clients;
+std::mutex clientsMutex;
+
+void broadcastUpdate() {
+    std::lock_guard<std::mutex> lock(clientsMutex);
+
+    crow::json::wvalue::list hacksList;
+    for (const auto& hack : hacks) {
+        crow::json::wvalue hackCtx;
+        hackCtx["name"] = hack.name;
+        hackCtx["enabled"] = hack.enabled;
+        hacksList.emplace_back(std::move(hackCtx));
+    }
+
+    crow::json::wvalue hacksList_t;
+    hacksList_t["hacks"] = std::move(hacksList);
+
+    for (auto client : clients) {
+        client->send_text(hacksList_t.dump());
+    }
+}
+
 void startWs() {
-    crow::SimpleApp app;
+    crow::App<> app;
 
     CROW_ROUTE(app, "/")
     ([]() {
@@ -61,11 +84,22 @@ void startWs() {
             for (auto& hack : hacks) {
                 if (hack.name == hackName) {
                     hack.enabled = !hack.enabled;
+                    broadcastUpdate();
                     return crow::response(hack.name + " is now " + (hack.enabled ? "enabled" : "disabled"));
                 }
             }
         }
         return crow::response(400, "Invalid hack name");
+    });
+
+    CROW_ROUTE(app, "/ws").websocket(&app)
+    .onopen([](crow::websocket::connection& conn) {
+        std::lock_guard<std::mutex> lock(clientsMutex);
+        clients.insert(&conn);
+    })
+    .onclose([](crow::websocket::connection& conn, const std::string& reason) {
+        std::lock_guard<std::mutex> lock(clientsMutex);
+        clients.erase(&conn);
     });
 
     geode::log::info("Mod menu running on localhost:3000");

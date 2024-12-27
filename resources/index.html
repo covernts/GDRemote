@@ -7,17 +7,52 @@
 <body>
     <h1>Hack Panel</h1>
     <p>Welcome, {{username}}!</p>
-    {{#hacks}}
-    <label>
-        <input type="checkbox" id="{{name}}-checkbox" onclick="toggleHack('{{name}}')" {{#enabled}}checked{{/enabled}}> {{name}}
-    </label><br>
-    {{/hacks}}
+    <div id="hacks-container">
+        {{#hacks}}
+        <label>
+            <input type="checkbox" id="{{name}}-checkbox" onclick="toggleHack('{{name}}')" {{#enabled}}checked{{/enabled}}> {{name}}
+        </label><br>
+        {{/hacks}}
+    </div>
 
     <script>
+        var ws = new WebSocket("ws://" + window.location.host + "/ws");
+
+        ws.onmessage = function(event) {
+            var message = JSON.parse(event.data);
+            if (message.hacks) {
+                message.hacks.forEach(function(hack) {
+                    var checkbox = document.getElementById(hack.name + "-checkbox");
+                    if (checkbox) {
+                        checkbox.checked = hack.enabled;
+                    } else {
+                        var checkbox = document.createElement("input");
+                        checkbox.type = "checkbox";
+                        checkbox.id = hack.name + "-checkbox";
+                        checkbox.checked = hack.enabled;
+                        checkbox.onclick = function() { toggleHack(hack.name); };
+
+                        var label = document.createElement("label");
+                        label.appendChild(checkbox);
+                        label.appendChild(document.createTextNode(" " + hack.name));
+                        
+                        var hacksContainer = document.getElementById("hacks-container");
+                        hacksContainer.appendChild(label);
+                        hacksContainer.appendChild(document.createElement("br"));
+                    }
+                });
+            }
+        };
+
         function toggleHack(hackName) {
             var xhr = new XMLHttpRequest();
             xhr.open("POST", "/toggle_hack?hack=" + hackName, true);
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    console.log(xhr.responseText);
+                }
+            };
             xhr.send();
         }
     </script>
