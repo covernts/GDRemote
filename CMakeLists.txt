@@ -8,7 +8,7 @@ project(GDControlWS VERSION 1.0.0)
 
 add_library(${PROJECT_NAME} SHARED
     src/main.cpp
-    src/Hacks.cpp
+    src/Modifiers.cpp
     src/Server.cpp
 )
 

@@ -1,4 +1,4 @@
-#include "Hacks.hpp"
+#include "Modifiers.hpp"
 #include "Server.hpp"
 
 #include <Geode/Geode.hpp>
@@ -10,7 +10,7 @@ using namespace geode::prelude;
 class $modify(PlayLayer) {
     void destroyPlayer(PlayerObject* p0, GameObject* p1) {
         if (p1 == m_anticheatSpike) return PlayLayer::destroyPlayer(p0, p1);
-        if (!gdws::Hacks::isEnabled("Noclip")) return PlayLayer::destroyPlayer(p0, p1);
+        if (!gdws::Modifiers::isEnabled("Noclip")) return PlayLayer::destroyPlayer(p0, p1);
     }
 };
 
