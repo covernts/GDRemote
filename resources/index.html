@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Noclip Toggle</title>
+</head>
+<body>
+    <h1>{{username}}'s Menu</h1>
+    <label>
+        <input type="checkbox" id="noclip-checkbox" onclick="toggleNoclip()" {{#noclip}}checked{{/noclip}}> Enable Noclip
+    </label>
+
+    <script>
+        function toggleNoclip() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/toggle_noclip", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.send();
+        }
+    </script>
+</body>
+</html>

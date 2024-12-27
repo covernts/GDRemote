@@ -1,0 +1,19 @@
+{
+	"geode": "4.1.1",
+	"gd": {
+		"win": "2.2074",
+		"android": "2.2074",
+		"mac": "2.2074",
+		"ios": "2.2074"
+	},
+	"id": "covernts.gdcontrolws",
+	"name": "Control WS",
+	"version": "v1.0.0",
+	"developer": "covernts",
+	"description": "Starts a webserver on port 3000 that controls the game.",
+	"resources": {
+		"files": [
+			"resources/index.html"
+		]
+	}
+}
