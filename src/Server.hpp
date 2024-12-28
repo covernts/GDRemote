@@ -1,5 +1,5 @@
 #pragma once
 
-namespace gdws::Server {
+namespace gdremote::Server {
     void startWs();
 }

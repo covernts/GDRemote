@@ -6,8 +6,8 @@
 		"mac": "2.2074",
 		"ios": "2.2074"
 	},
-	"id": "covernts.gdcontrolws",
-	"name": "Control WS",
+	"id": "covernts.gdremote",
+	"name": "GD Remote",
 	"version": "v1.0.0",
 	"developer": "covernts",
 	"description": "Starts a panel for controlling modifiers.",

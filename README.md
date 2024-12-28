@@ -1,23 +1,27 @@
-# Mod
-This is where she makes a mod.
+# GD Remote
+GD Remote is a mod for Geometry Dash that starts a web panel for controlling various modifiers in the game. The panel allows you to toggle different hacks and features dynamically through a web interface.
 
-<img src="logo.png" width="150" alt="the mod's logo" />
+## Usage
+1. Start Geometry Dash with the mod installed.
+2. Open your web browser and navigate to `http://localhost:3000/` to access the modifier panel.
+3. Use the checkboxes and buttons to toggle different hacks and features.
 
-*Update logo.png to change your mod's icon (please)*
+## Build
+To build this mod, make sure you have the following tools installed:
+- **CMake**
+- **MSVC / Clang**
+- **Git**
+- **Geode CLI**
+- **Geode SDK**
 
-## Getting started
-We recommend heading over to [the getting started section on our docs](https://docs.geode-sdk.org/getting-started/) for useful info on what to do next.
-
-## Build instructions
-For more info, see [our docs](https://docs.geode-sdk.org/getting-started/create-mod#build)
-```sh
-# Assuming you have the Geode CLI set up already
+### Steps:
+```bash
+git clone https://github.com/covernts/GDRemote
+cd GDRemote
 geode build
 ```
 
-# Resources
-* [Geode SDK Documentation](https://docs.geode-sdk.org/)
-* [Geode SDK Source Code](https://github.com/geode-sdk/geode/)
-* [Geode CLI](https://github.com/geode-sdk/cli)
-* [Bindings](https://github.com/geode-sdk/bindings/)
-* [Dev Tools](https://github.com/geode-sdk/DevTools)
+## Libraries Used
+- [Geode](https://github.com/geode-sdk/geode) - A modding framework for Geometry Dash.
+- [Crow](https://github.com/CrowCpp/Crow) - A HTTP and Websocket framework.
+- [Asio](https://github.com/chriskohlhoff/asio) - Basic networking library.

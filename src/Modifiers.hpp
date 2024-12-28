@@ -1,6 +1,6 @@
 #pragma once
 
-namespace gdws::Modifiers {
+namespace gdremote::Modifiers {
     enum class ModifierType {
         Checkbox,
         Button

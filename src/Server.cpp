@@ -5,7 +5,7 @@
 #include <crow/mustache.h>
 #include <crow/websocket.h>
 
-namespace gdws::Server {
+namespace gdremote::Server {
     std::set<crow::websocket::connection*> clients;
     std::mutex clientsMutex;
     std::string panelPassword = geode::Mod::get()->getSettingValue<std::string>("panel-pass");
@@ -25,12 +25,12 @@ namespace gdws::Server {
         std::lock_guard<std::mutex> lock(clientsMutex);
 
         crow::json::wvalue::list modsList;
-        for (const auto& mod : gdws::Modifiers::m_mods) {
+        for (const auto& mod : gdremote::Modifiers::m_mods) {
             crow::json::wvalue modCtx;
             modCtx["name"] = mod->getName();
             modCtx["enabled"] = mod->getEnabled();
-            modCtx["isCheckbox"] = (mod->getType() == gdws::Modifiers::ModifierType::Checkbox);
-            modCtx["isButton"] = (mod->getType() == gdws::Modifiers::ModifierType::Button);
+            modCtx["isCheckbox"] = (mod->getType() == gdremote::Modifiers::ModifierType::Checkbox);
+            modCtx["isButton"] = (mod->getType() == gdremote::Modifiers::ModifierType::Button);
             modsList.emplace_back(std::move(modCtx));
         }
 
@@ -51,12 +51,12 @@ namespace gdws::Server {
             std::string templateContent = loadFile((geode::Mod::get()->getResourcesDir() / "index.html").string());
 
             crow::json::wvalue::list modsList;
-            for (const auto& mod : gdws::Modifiers::m_mods) {
+            for (const auto& mod : gdremote::Modifiers::m_mods) {
                 crow::json::wvalue modCtx;
                 modCtx["name"] = mod->getName();
                 modCtx["enabled"] = mod->getEnabled();
-                modCtx["isCheckbox"] = (mod->getType() == gdws::Modifiers::ModifierType::Checkbox);
-                modCtx["isButton"] = (mod->getType() == gdws::Modifiers::ModifierType::Button);
+                modCtx["isCheckbox"] = (mod->getType() == gdremote::Modifiers::ModifierType::Checkbox);
+                modCtx["isButton"] = (mod->getType() == gdremote::Modifiers::ModifierType::Button);
                 modsList.emplace_back(std::move(modCtx));
             }
             
@@ -87,12 +87,12 @@ namespace gdws::Server {
         ([](const crow::request& req) {
             auto modName = req.url_params.get("mod");
             if (modName) {
-                for (auto& mod : gdws::Modifiers::m_mods) {
+                for (auto& mod : gdremote::Modifiers::m_mods) {
                     if (mod->getName() == modName) {
                         mod->setEnabled(!mod->getEnabled());
                         auto msg = fmt::format("{} is now {}.", mod->getName(), (mod->getEnabled() ? "enabled" : "disabled"));
                         broadcastUpdate(msg);
-                        if (!gdws::Modifiers::isEnabled("Supress Notifications")) {
+                        if (!gdremote::Modifiers::isEnabled("Supress Notifications")) {
                             geode::queueInMainThread([msg]() {
                                 geode::Notification::create(msg, geode::NotificationIcon::Info)->show();
                             });
@@ -108,12 +108,12 @@ namespace gdws::Server {
         ([](const crow::request& req) {
             auto modName = req.url_params.get("mod");
             if (modName) {
-                for (auto mod : gdws::Modifiers::m_mods) {
-                    if (mod->getName() == modName && mod->getType() == gdws::Modifiers::ModifierType::Button) {
+                for (auto mod : gdremote::Modifiers::m_mods) {
+                    if (mod->getName() == modName && mod->getType() == gdremote::Modifiers::ModifierType::Button) {
                         auto msg = fmt::format("{} clicked.", mod->getName());
                         mod->buttonCallback();
                         broadcastUpdate(msg);
-                        if (!gdws::Modifiers::isEnabled("Supress Notifications")) {
+                        if (!gdremote::Modifiers::isEnabled("Supress Notifications")) {
                             geode::queueInMainThread([msg]() {
                                 geode::Notification::create(msg, geode::NotificationIcon::Info)->show();
                             });

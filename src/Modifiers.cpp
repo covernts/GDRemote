@@ -1,6 +1,6 @@
 #include "Modifiers.hpp"
 
-namespace gdws::Modifiers {
+namespace gdremote::Modifiers {
     std::vector<Modifier*> m_mods = {
         new Modifier("Noclip", false, ModifierType::Checkbox),
         new Modifier("Invisible Player", false, ModifierType::Checkbox),

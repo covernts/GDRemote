@@ -1,3 +1,2 @@
-# Template Mod
-
-Edit about.md to change this
+# GD Remote
+idk what to put here
