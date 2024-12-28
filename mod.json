@@ -13,7 +13,9 @@
 	"description": "Starts a panel for controlling modifiers.",
 	"resources": {
 		"files": [
-			"resources/index.html"
+			"resources/index.html",
+			"resources/index.js",
+			"resources/styles.css"
 		]
 	},
 	"settings": {

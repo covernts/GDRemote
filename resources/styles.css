@@ -1,0 +1,64 @@
+body {
+    background-color: #121212;
+    color: #ffffff;
+    font-family: monospace;
+}
+
+.panel {
+    background-color: #1e1e1e;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.panel h1 {
+    margin-bottom: 20px;
+}
+
+.panel label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.panel input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.alert {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: none;
+    font-family: monospace;
+    background-color: #1e1e1e;
+    color: #ffffff;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 0;
+    width: 300px;
+}
+
+.alert .progress {
+    height: 5px;
+    background-color: #333;
+    border-radius: 8px 8px 0 0;
+}
+
+.alert .progress-bar {
+    background-color: #007bff;
+}
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.login-panel {
+    background-color: #1e1e1e;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}

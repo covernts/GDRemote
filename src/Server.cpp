@@ -10,7 +10,7 @@ namespace gdws::Server {
     std::mutex clientsMutex;
     std::string panelPassword = geode::Mod::get()->getSettingValue<std::string>("panel-pass");
 
-    std::string loadTemplate(const std::string& path) {
+    std::string loadFile(const std::string& path) {
         std::ifstream file(path);
         if (!file.is_open()) {
             geode::log::error("Failed to open template file: {}", path);
@@ -27,8 +27,10 @@ namespace gdws::Server {
         crow::json::wvalue::list modsList;
         for (const auto& mod : gdws::Modifiers::m_mods) {
             crow::json::wvalue modCtx;
-            modCtx["name"] = mod.name;
-            modCtx["enabled"] = mod.enabled;
+            modCtx["name"] = mod->getName();
+            modCtx["enabled"] = mod->getEnabled();
+            modCtx["isCheckbox"] = (mod->getType() == gdws::Modifiers::ModifierType::Checkbox);
+            modCtx["isButton"] = (mod->getType() == gdws::Modifiers::ModifierType::Button);
             modsList.emplace_back(std::move(modCtx));
         }
 
@@ -46,13 +48,15 @@ namespace gdws::Server {
 
         CROW_ROUTE(app, "/")
         ([]() {
-            std::string templateContent = loadTemplate((geode::Mod::get()->getResourcesDir() / "index.html").string());
+            std::string templateContent = loadFile((geode::Mod::get()->getResourcesDir() / "index.html").string());
 
             crow::json::wvalue::list modsList;
             for (const auto& mod : gdws::Modifiers::m_mods) {
                 crow::json::wvalue modCtx;
-                modCtx["name"] = mod.name;
-                modCtx["enabled"] = mod.enabled;
+                modCtx["name"] = mod->getName();
+                modCtx["enabled"] = mod->getEnabled();
+                modCtx["isCheckbox"] = (mod->getType() == gdws::Modifiers::ModifierType::Checkbox);
+                modCtx["isButton"] = (mod->getType() == gdws::Modifiers::ModifierType::Button);
                 modsList.emplace_back(std::move(modCtx));
             }
             
@@ -62,6 +66,12 @@ namespace gdws::Server {
             
             crow::mustache::template_t tmpl = templateContent;
             return tmpl.render(ctx);
+        });
+
+        CROW_ROUTE(app, "/static/<string>")
+        ([](const crow::request& req, std::string filename) {
+            std::string path = (geode::Mod::get()->getResourcesDir() / filename).string();
+            return crow::response(loadFile(path));
         });
 
         CROW_ROUTE(app, "/login").methods(crow::HTTPMethod::Post)
@@ -78,10 +88,36 @@ namespace gdws::Server {
             auto modName = req.url_params.get("mod");
             if (modName) {
                 for (auto& mod : gdws::Modifiers::m_mods) {
-                    if (mod.name == modName) {
-                        mod.enabled = !mod.enabled;
-                        auto msg = mod.name + " is now " + (mod.enabled ? "enabled" : "disabled");
+                    if (mod->getName() == modName) {
+                        mod->setEnabled(!mod->getEnabled());
+                        auto msg = fmt::format("{} is now {}.", mod->getName(), (mod->getEnabled() ? "enabled" : "disabled"));
                         broadcastUpdate(msg);
+                        if (!gdws::Modifiers::isEnabled("Supress Notifications")) {
+                            geode::queueInMainThread([msg]() {
+                                geode::Notification::create(msg, geode::NotificationIcon::Info)->show();
+                            });
+                        }
+                        return crow::response(msg);
+                    }
+                }
+            }
+            return crow::response(400, "Invalid mod name");
+        });
+
+        CROW_ROUTE(app, "/button").methods(crow::HTTPMethod::Post)
+        ([](const crow::request& req) {
+            auto modName = req.url_params.get("mod");
+            if (modName) {
+                for (auto mod : gdws::Modifiers::m_mods) {
+                    if (mod->getName() == modName && mod->getType() == gdws::Modifiers::ModifierType::Button) {
+                        auto msg = fmt::format("{} clicked.", mod->getName());
+                        mod->buttonCallback();
+                        broadcastUpdate(msg);
+                        if (!gdws::Modifiers::isEnabled("Supress Notifications")) {
+                            geode::queueInMainThread([msg]() {
+                                geode::Notification::create(msg, geode::NotificationIcon::Info)->show();
+                            });
+                        }
                         return crow::response(msg);
                     }
                 }

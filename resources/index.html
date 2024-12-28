@@ -4,48 +4,7 @@
     <meta charset="UTF-8">
     <title>Mod Panel</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <style>
-        body {
-            background-color: #121212;
-            color: #ffffff;
-            font-family: Monospace;
-        }
-        .panel {
-            background-color: #1e1e1e;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        }
-        .panel h1 {
-            margin-bottom: 20px;
-        }
-        .panel label {
-            display: block;
-            margin-bottom: 10px;
-        }
-        .panel input[type="checkbox"] {
-            margin-right: 10px;
-        }
-        .alert {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-            display: none;
-        }
-        .login-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        .login-panel {
-            background-color: #1e1e1e;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        }
-    </style>
+    <link href="./static/styles.css" rel="stylesheet">
 </head>
 <body>
     <div id="login-container" class="login-container">
@@ -54,7 +13,6 @@
             <p>Please enter the password to access {{username}}'s modifier panel.</p>
             <input id="password" class="form-control mb-3" placeholder="Password">
             <button onclick="login()" class="btn btn-primary">Login</button>
-            <div id="login-error" class="alert alert-danger mt-3" style="display: none;">Incorrect password</div>
         </div>
     </div>
 
@@ -64,92 +22,26 @@
             <p>Welcome to {{username}}'s modifier panel!</p>
             <div id="mods-container">
                 {{#mods}}
+                {{#isCheckbox}}
                 <label class="form-check-label">
                     <input class="form-check-input" type="checkbox" id="{{name}}-checkbox" onclick="toggleMod('{{name}}')" {{#enabled}}checked{{/enabled}}> {{name}}
                 </label>
+                {{/isCheckbox}}
+                {{#isButton}}
+                <button id="{{name}}-button" class="btn btn-primary" onclick="buttonClick('{{name}}')">{{name}}</button>
+                {{/isButton}}
                 {{/mods}}
             </div>
         </div>
     </div>
 
-    <div id="notification" class="alert alert-success" role="alert"></div>
+    <div id="notification" class="alert alert-success" role="alert">
+        <div class="progress" style="height: 5px; margin-bottom: 10px;">
+            <div id="notification-progress" class="progress-bar" role="progressbar" style="width: 100%;"></div>
+        </div>
+        <span id="notification-message"></span>
+    </div>
 
-    <script>
-        var ws;
-
-        function login() {
-            var password = document.getElementById("password").value;
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", "/login?password=" + password, true);
-            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4 && xhr.status === 200) {
-                    if (xhr.responseText === "success") {
-                        document.getElementById("login-container").style.display = "none";
-                        document.getElementById("panel-container").style.display = "block";
-                        startWebSocket();
-                    } else {
-                        document.getElementById("login-error").style.display = "block";
-                    }
-                }
-            };
-            xhr.send();
-        }
-
-        function startWebSocket() {
-            ws = new WebSocket("ws://" + window.location.host + "/ws");
-
-            ws.onmessage = function(event) {
-                var message = JSON.parse(event.data);
-                if (message.mods) {
-                    message.mods.forEach(function(mod) {
-                        var checkbox = document.getElementById(mod.name + "-checkbox");
-                        if (checkbox) {
-                            checkbox.checked = mod.enabled;
-                        } else {
-                            var checkbox = document.createElement("input");
-                            checkbox.type = "checkbox";
-                            checkbox.id = mod.name + "-checkbox";
-                            checkbox.checked = mod.enabled;
-                            checkbox.onclick = function() { toggleMod(mod.name); };
-
-                            var label = document.createElement("label");
-                            label.className = "form-check-label";
-                            label.appendChild(checkbox);
-                            label.appendChild(document.createTextNode(" " + mod.name));
-                            
-                            var modsContainer = document.getElementById("mods-container");
-                            modsContainer.appendChild(label);
-                            modsContainer.appendChild(document.createElement("br"));
-                        }
-                    });
-                }
-                if (message.notification) {
-                    showNotification(message.notification);
-                }
-            };
-        }
-
-        function toggleMod(modName) {
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", "/toggle?mod=" + modName, true);
-            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4 && xhr.status === 200) {
-                    console.log(xhr.responseText);
-                }
-            };
-            xhr.send();
-        }
-
-        function showNotification(message) {
-            var notification = document.getElementById("notification");
-            notification.innerText = message;
-            notification.style.display = "block";
-            setTimeout(function() {
-                notification.style.display = "none";
-            }, 3000);
-        }
-    </script>
+    <script src="./static/index.js"></script>
 </body>
 </html>
