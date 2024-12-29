@@ -19,9 +19,16 @@ class $modify(GJBaseGameLayer) {
     virtual void update(float p0) {
         GJBaseGameLayer::update(p0);
 
-        if (gdremote::Modifiers::isEnabled("Invisible Player")) {
-            m_player1->toggleVisibility(false);
-            if (m_gameState.m_isDualMode) m_player2->toggleVisibility(false);
+        if (gdremote::Modifiers::isEnabled("Random Jump")) {
+            int n = std::rand() % 50 + 1;
+            if (n == 1) {
+                m_player1->pushButton(PlayerButton::Jump);
+                m_player1->releaseAllButtons();
+                if (m_gameState.m_isDualMode) { 
+                    m_player2->pushButton(PlayerButton::Jump); 
+                    m_player2->releaseAllButtons();
+                }
+            }
         }
     }
 };
@@ -33,7 +40,6 @@ class $modify(MenuLayer) {
         static bool s_isInit = false;
         if (!s_isInit) {
             s_isInit = true;
-            Notification::create(fmt::format("Remote running on localhost:3000. Password: {}", Mod::get()->getSettingValue<std::string>("panel-pass")), NotificationIcon::Info)->show();
             std::thread(gdremote::Server::startWs).detach();
         }
 

@@ -25,11 +25,7 @@ body {
 }
 
 .alert {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 1000;
-    display: none;
+    position: relative;
     font-family: monospace;
     background-color: #1e1e1e;
     color: #ffffff;
@@ -47,6 +43,14 @@ body {
 
 .alert .progress-bar {
     background-color: #007bff;
+}
+
+#notifications-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    width: 320px;
 }
 
 .login-container {

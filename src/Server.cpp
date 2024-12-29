@@ -48,7 +48,8 @@ namespace gdremote::Server {
 
         CROW_ROUTE(app, "/")
         ([]() {
-            std::string templateContent = loadFile((geode::Mod::get()->getResourcesDir() / "index.html").string());
+            auto tmpl = loadFile((geode::Mod::get()->getResourcesDir() / "index.html").string());
+            crow::mustache::template_t tmpl_t = tmpl;
 
             crow::json::wvalue::list modsList;
             for (const auto& mod : gdremote::Modifiers::m_mods) {
@@ -63,9 +64,8 @@ namespace gdremote::Server {
             crow::json::wvalue ctx;
             ctx["username"] = GJAccountManager::get()->m_username;
             ctx["mods"] = std::move(modsList);
-            
-            crow::mustache::template_t tmpl = templateContent;
-            return tmpl.render(ctx);
+
+            return tmpl_t.render(ctx);
         });
 
         CROW_ROUTE(app, "/static/<string>")
@@ -135,7 +135,6 @@ namespace gdremote::Server {
             clients.erase(&conn);
         });
 
-        geode::log::info("Mod menu running on localhost:3000");
         app.port(3000).multithreaded().run();
     }
 }

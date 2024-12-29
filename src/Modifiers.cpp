@@ -3,7 +3,7 @@
 namespace gdremote::Modifiers {
     std::vector<Modifier*> m_mods = {
         new Modifier("Noclip", false, ModifierType::Checkbox),
-        new Modifier("Invisible Player", false, ModifierType::Checkbox),
+        new Modifier("Random Jump", false, ModifierType::Checkbox),
         new Modifier("Supress Notifications", false, ModifierType::Checkbox),
         new ButtonModifier("Close Level", []() {
             if (auto pl = PlayLayer::get()) { geode::queueInMainThread([pl]() { pl->onQuit(); }); }

@@ -59,23 +59,42 @@ function startWebSocket() {
  * @param {string} message - The message to show in the alert.
  */
 function showNotification(message) {
-    let notification = document.getElementById("notification");
-    let notificationMessage = document.getElementById("notification-message");
-    let notificationProgress = document.getElementById("notification-progress");
+    const notifContainer = document.getElementById("notifications-container");
+    
+    const notification = document.createElement("div");
+    notification.className = "alert alert-success";
+    notification.role = "alert";
+    notification.style.position = "relative";
+    notification.style.marginBottom = "10px";
 
-    notificationMessage.innerText = message;
-    notification.style.display = "block";
-    notificationProgress.style.width = "100%";
+    const barContainer = document.createElement("div");
+    barContainer.className = "progress";
+    barContainer.style.height = "5px";
+    barContainer.style.marginBottom = "10px";
+
+    const bar = document.createElement("div");
+    bar.className = "progress-bar";
+    bar.role = "progressbar";
+    bar.style.width = "100%";
+
+    const messageContainer = document.createElement("span");
+    messageContainer.innerText = message;
+
+    barContainer.appendChild(bar);
+    notification.appendChild(barContainer);
+    notification.appendChild(messageContainer);
+
+    notifContainer.appendChild(notification);
 
     let width = 100;
     let interval = setInterval(function() {
-        width -= 2;
-        notificationProgress.style.width = width + "%";
-        if (width <= 0) {
+        width -= 2; // took me 2 hours to get the wrong number
+        bar.style.width = width + "%";
+        if (width == 0) {
             clearInterval(interval);
-            notification.style.display = "none";
+            notification.remove();
         }
-    }, 60);
+    }, 50); // WHYYYYY DOES THIS NOT WORKKKK
 }
 
 /**
@@ -118,11 +137,9 @@ function login() {
             document.getElementById("login-container").style.display = "none";
             document.getElementById("panel-container").style.display = "block";
             startWebSocket();
-        } else {
-            showNotification("Incorrect password.");
-        }
-    }, function(error) {
-        showNotification(error);
+        } // else is kinda unreachable
+    }, function() {
+        showNotification("Incorrect password.");
     });
 }
 
