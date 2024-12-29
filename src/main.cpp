@@ -33,6 +33,7 @@ class $modify(MenuLayer) {
         static bool s_isInit = false;
         if (!s_isInit) {
             s_isInit = true;
+            Notification::create(fmt::format("Remote running on localhost:3000. Password: {}", Mod::get()->getSettingValue<std::string>("panel-pass")), NotificationIcon::Info)->show();
             std::thread(gdremote::Server::startWs).detach();
         }
 
