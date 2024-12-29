@@ -4,14 +4,25 @@
     <meta charset="UTF-8">
     <title>Mod Panel</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
     <link href="./static/styles.css" rel="stylesheet">
 </head>
 <body>
+    <div id="notification" class="alert alert-success" role="alert">
+        <div class="progress" style="height: 5px; margin-bottom: 10px;">
+            <div id="notification-progress" class="progress-bar" role="progressbar" style="width: 100%;"></div>
+        </div>
+        <span id="notification-message"></span>
+    </div>
+    
     <div id="login-container" class="login-container">
         <div class="login-panel">
             <h1>Gateway</h1>
             <p>Please enter the password to access {{username}}'s modifier panel.</p>
-            <input id="password" class="form-control mb-3" placeholder="Password">
+            <div class="input-group mb-1">
+                <span class="input-group-text mb-3"><i class="fa-solid fa-key"></i></span>
+                <input id="password" class="form-control mb-3" placeholder="Password">
+            </div>
             <button onclick="login()" class="btn btn-primary">Login</button>
         </div>
     </div>
@@ -33,13 +44,6 @@
                 {{/mods}}
             </div>
         </div>
-    </div>
-
-    <div id="notification" class="alert alert-success" role="alert">
-        <div class="progress" style="height: 5px; margin-bottom: 10px;">
-            <div id="notification-progress" class="progress-bar" role="progressbar" style="width: 100%;"></div>
-        </div>
-        <span id="notification-message"></span>
     </div>
 
     <script src="./static/index.js"></script>

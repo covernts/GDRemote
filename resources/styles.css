@@ -35,14 +35,14 @@ body {
     color: #ffffff;
     border: 1px solid #333;
     border-radius: 8px;
-    padding: 0;
+    padding: 15px;
     width: 300px;
 }
 
 .alert .progress {
     height: 5px;
     background-color: #333;
-    border-radius: 8px 8px 0 0;
+    border-radius: 8px;
 }
 
 .alert .progress-bar {
