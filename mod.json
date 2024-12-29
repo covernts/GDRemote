@@ -32,5 +32,9 @@
 		"online",
 		"customization",
 		"utility"
-	]
+	],
+	"links": {
+		"community": "https://discord.gg/DWEpExDVWs",
+		"source": "https://github.com/covernts/GDRemote"
+	}
 }
